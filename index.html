@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>광합성·세포호흡 퀴즈</title>
+<style>
+/* VOICE: iOS 기본 앱처럼 조용하고 또렷한 연습 도구
+   IDEA: 아이폰 '설정'·'건강' 앱의 그룹 목록과 큰 제목
+   PICTURE: 문제 카드(큰 질문 + 입력칸)와 결과의 정답률 링
+   COLOUR and TYPE: systemGroupedBackground, 흰 카드, systemBlue 강조, 과정별 시스템 색 점 / SF Pro·Apple SD Gothic Neo
+   LAYOUT: 모바일 한 열 → 태블릿 가운데 640px → PC 2열(목록 + 요약) */
+:root{color-scheme:light dark;
+--bg:light-dark(#f2f2f7,#000);--card:light-dark(#fff,#1c1c1e);--card2:light-dark(#f2f2f7,#2c2c2e);
+--ink:light-dark(#000,#fff);--sec:light-dark(rgba(60,60,67,.6),rgba(235,235,245,.6));--sep:light-dark(rgba(60,60,67,.18),rgba(84,84,88,.6));
+--blue:light-dark(#007aff,#0a84ff);--green:light-dark(#34c759,#30d158);--red:light-dark(#ff3b30,#ff453a);--fill:light-dark(rgba(120,120,128,.12),rgba(120,120,128,.24));
+--G:#ff9500;--T:#ffcc00;--O:#af52de;--L:#34c759;--C:#007aff;--r:14px}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.47 -apple-system,BlinkMacSystemFont,"SF Pro Text","Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",system-ui,sans-serif;letter-spacing:-.01em;overflow-x:clip;word-break:keep-all;-webkit-font-smoothing:antialiased}
+.nav{position:sticky;top:0;z-index:5;background:light-dark(rgba(242,242,247,.82),rgba(0,0,0,.78));backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:.5px solid transparent;padding:calc(env(safe-area-inset-top) + 8px) max(16px,env(safe-area-inset-right)) 8px max(16px,env(safe-area-inset-left))}
+.nav.line{border-bottom-color:var(--sep)}
+.navin{max-width:980px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;min-height:36px;gap:8px}
+.navt{font-weight:600;font-size:17px;opacity:0;transition:opacity .2s}.nav.line .navt{opacity:1}
+.nb{background:none;border:0;color:var(--blue);font:inherit;font-size:17px;padding:6px 0;cursor:pointer;min-height:44px}
+.wrap{max-width:980px;margin:0 auto;padding:0 max(16px,env(safe-area-inset-right)) calc(32px + env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left))}
+h1{font-size:34px;line-height:1.12;font-weight:700;letter-spacing:.01em;margin:4px 0 6px;text-wrap:balance}
+.lead{color:var(--sec);font-size:15px;margin:0 0 22px}
+.gh{font-size:13px;color:var(--sec);margin:0 16px 7px;letter-spacing:0}
+.gf{font-size:13px;color:var(--sec);margin:7px 16px 0;line-height:1.4}
+.group{background:var(--card);border-radius:var(--r);overflow:hidden;margin-bottom:28px}
+.cell{display:flex;align-items:center;gap:12px;padding:11px 16px;min-height:52px;position:relative;width:100%;background:none;border:0;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.cell+.cell::before{content:"";position:absolute;top:0;left:52px;right:0;border-top:.5px solid var(--sep)}
+.cell:active{background:var(--fill)}
+.ico{width:28px;height:28px;border-radius:7px;background:var(--c);flex:none;display:grid;place-items:center;color:#fff;font-size:13px;font-weight:700}
+.ico.T{color:#4d3800}
+.cell .tx{flex:1}.cell .tx small{display:block;color:var(--sec);font-size:13px}
+.chk{width:22px;height:22px;flex:none;color:var(--blue);opacity:0}.cell.on .chk{opacity:1}
+.seg{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));background:var(--fill);border-radius:9px;padding:2px;margin-bottom:28px}
+.seg button{border:0;background:none;color:var(--ink);font:inherit;font-size:15px;font-weight:500;padding:7px 0;border-radius:7px;cursor:pointer;min-height:36px}
+.seg button.on{background:light-dark(#fff,#636366);box-shadow:0 3px 8px rgba(0,0,0,.12),0 0 1px rgba(0,0,0,.1);font-weight:600}
+.btn{display:block;width:100%;border:0;border-radius:var(--r);padding:15px 20px;font:inherit;font-size:17px;font-weight:600;cursor:pointer;min-height:50px;background:var(--blue);color:#fff}
+.btn:disabled{opacity:.35}
+.btn.tint{background:light-dark(rgba(0,122,255,.12),rgba(10,132,255,.2));color:var(--blue)}
+.btn.gray{background:var(--fill);color:var(--ink)}
+.btn:active{opacity:.75}
+button:focus-visible,input:focus-visible{outline:3px solid light-dark(rgba(0,122,255,.5),rgba(10,132,255,.6));outline-offset:2px}
+.tip{color:var(--sec);font-size:13px;line-height:1.5;margin:14px 4px 0}
+.side .stat{display:flex;justify-content:space-between;align-items:baseline}
+.side .stat b{font-size:28px;font-weight:700;font-variant-numeric:tabular-nums}
+.pg{height:4px;background:var(--fill);border-radius:2px;overflow:hidden;margin:2px 0 18px}.pg i{display:block;height:100%;background:var(--blue);border-radius:2px;transition:width .35s ease}
+.qc{background:var(--card);border-radius:20px;padding:clamp(20px,4vw,32px)}
+.plab{display:flex;align-items:center;gap:7px;font-size:14px;font-weight:600;color:var(--sec);margin-bottom:10px}
+.plab i{width:10px;height:10px;border-radius:50%;background:var(--c)}
+.q{font-size:clamp(21px,2.6vw,26px);line-height:1.38;font-weight:700;margin:0 0 22px;text-wrap:pretty}
+.field{width:100%;font:inherit;font-size:19px;padding:14px 16px;border:0;border-radius:12px;background:var(--card2);color:var(--ink);-webkit-appearance:none}
+.field::placeholder{color:var(--sec)}
+.field:disabled{opacity:.6}
+.hint{color:var(--sec);font-size:14px;min-height:20px;margin:8px 4px 14px}
+.acts{display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px}
+.fb{margin-top:18px;border-radius:16px;padding:16px 18px;background:var(--card2)}
+.fbh{display:flex;align-items:center;gap:10px;font-size:19px;font-weight:700;margin-bottom:10px}
+.fbh svg{width:28px;height:28px;flex:none}
+.ok .fbh{color:var(--green)}.no .fbh{color:var(--red)}
+.kv{display:grid;grid-template-columns:4.2em minmax(0,1fr);gap:4px 10px;font-size:16px}
+.kv dt{color:var(--sec)}.kv dd{margin:0;font-weight:600}
+.ex{margin:12px 0 0;padding-top:12px;border-top:.5px solid var(--sep);font-size:15px;line-height:1.55}
+.st{font-size:13px;color:var(--sec);margin-top:8px}
+.link{background:none;border:0;color:var(--blue);font:inherit;font-size:14px;cursor:pointer;padding:10px 0;min-height:44px}
+.nx{margin-top:14px}
+.ring{display:grid;place-items:center;margin:6px 0 4px}
+.ring svg{width:min(56vw,210px);height:auto}
+.ring .pc{font-size:44px;font-weight:700;fill:var(--ink)}.ring .sb{font-size:13px;fill:var(--sec)}
+.rmsg{text-align:center;color:var(--sec);font-size:15px;margin:0 0 24px}
+.bar{display:grid;grid-template-columns:minmax(0,1fr) 3.2em;align-items:center;gap:10px;width:100%}
+.bar .tr{grid-column:1/-1;height:6px;background:var(--fill);border-radius:3px;overflow:hidden}.bar .tr i{display:block;height:100%;background:var(--c);border-radius:3px}
+.bar b{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+.rbtn{display:grid;gap:10px;margin-bottom:28px}
+.wr{padding:14px 16px;position:relative}.wr+.wr::before{content:"";position:absolute;top:0;left:16px;right:0;border-top:.5px solid var(--sep)}
+.wr .wq{font-weight:600;font-size:16px;margin-bottom:6px}.wr .wq span{color:var(--sec);font-weight:500;font-size:13px;display:block}
+.wr .wa{color:var(--red);font-size:15px}.wr .wc{color:var(--green);font-size:15px;font-weight:600}.wr .we{color:var(--sec);font-size:14px;margin-top:4px}
+.hide{display:none!important}
+.single{max-width:680px;margin:0 auto}
+@media(min-width:900px){
+ h1{font-size:40px}
+ .split{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:28px;align-items:start}
+ .side{position:sticky;top:76px}
+ .res2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:28px;align-items:start}
+ .res2 .rleft{position:sticky;top:76px}
+}
+@media(max-width:420px){.acts{grid-template-columns:1fr 1fr}.acts .btn:first-child{grid-column:1/-1}h1{font-size:30px}}
+@media(prefers-reduced-motion:reduce){.pg i,.navt{transition:none}}
+</style>
+</head>
+<body>
+<nav class="nav" id="nav"><div class="navin"><button class="nb hide" id="back">‹ 처음으로</button><span class="navt" id="navt">퀴즈</span><span id="navr" style="color:var(--sec);font-size:15px;font-variant-numeric:tabular-nums"></span></div></nav>
+<div class="wrap">
+
+<section id="setup">
+ <h1>광합성·세포호흡 퀴즈</h1>
+ <p class="lead" id="bank"></p>
+ <div class="split">
+  <div>
+   <p class="gh">과정 선택</p>
+   <div class="group" id="plist"></div>
+   <p class="gh">문제 수</p>
+   <div class="seg" id="seg" role="radiogroup"></div>
+  </div>
+  <div class="side">
+   <p class="gh">나의 기록 (이 기기)</p>
+   <div class="group"><div class="cell" style="cursor:default"><div class="tx">누적 정답률<small id="tot"></small></div><b id="totp" style="font-size:22px;font-variant-numeric:tabular-nums"></b></div></div>
+   <button class="btn" id="go">퀴즈 시작</button>
+   <p class="tip">띄어쓰기·대소문자·아래첨자(O₂/O2)는 구분하지 않아요. 답이 여러 개면 쉼표로 나누고, 방향은 “A → B”처럼 써요.</p>
+   <button class="link" id="reset">기록 지우기</button>
+  </div>
+ </div>
+</section>
+
+<section id="quiz" class="single hide">
+ <div class="pg" style="margin-top:6px"><i id="pbar"></i></div>
+ <div class="qc">
+  <div class="plab" id="plab"></div>
+  <div class="q" id="qtext"></div>
+  <form id="form" autocomplete="off"><input class="field" id="ans" placeholder="정답 입력" aria-label="정답 입력" enterkeyhint="done" autocapitalize="off" autocorrect="off" spellcheck="false"></form>
+  <div class="hint" id="hint"></div>
+  <div class="acts" id="acts"><button class="btn" id="submit">확인</button><button class="btn gray" id="hintBtn">힌트</button><button class="btn gray" id="skip">모름</button></div>
+  <div id="fb"></div>
+ </div>
+</section>
+
+<section id="result" class="hide"></section>
+</div>
+<script>
+{
+const PN={G:'해당과정',T:'TCA 회로',O:'산화적 인산화',L:'명반응',C:'캘빈 회로'};
+const PI={G:'해',T:'T',O:'산',L:'명',C:'캘'};
+const KG='α-케토글루타르산|알파케토글루타르산|a-케토글루타르산|케토글루타르산|α-KG|aKG';
+const D=[
+['G',1,'해당과정 ① 단계에서 포도당이 ATP 1분자를 써서 인산화되어 생기는 물질은?','포도당-6-인산|G-6-P|G6P|글루코스-6-인산','포도당 → 포도당-6-인산(G-6-P). ATP → ADP가 표시되는 한 방향(비가역) 반응이에요.'],
+['G',1,'포도당-6-인산이 이성질화되어 생기는 물질은?','과당-6-인산|F-6-P|F6P|프럭토스-6-인산','② 단계: G-6-P ⇄ F-6-P (양방향 반응).'],
+['G',1,'과당-6-인산이 ATP 1분자를 더 써서 생기는 6탄소 물질은?','과당-1,6-이인산|F-1,6-BP|F16BP|과당이인산','③ 단계: F-6-P → F-1,6-BP. 두 번째로 ATP를 쓰는 한 방향 반응.'],
+['G',1,'과당-1,6-이인산이 쪼개져 생기는 3탄소 물질 2가지를 쓰시오.','DHAP|디히드록시아세톤인산;G3P|PGAL|글리세르알데히드-3-인산','④ 단계에서 6C가 DHAP + G3P(각 3C)로 나뉘고, DHAP는 ⑤ 단계에서 G3P로 바뀌어요.','set'],
+['G',1,'G3P가 NAD⁺에 의해 산화되고 인산이 붙어 생기는 물질은?','1,3-BPGA|BPGA|1,3-이인산글리세르산|1,3-비스포스포글리세르산','⑥ 단계: G3P → 1,3-BPGA. NAD⁺ → NADH, Pᵢ가 들어가요.'],
+['G',1,'1,3-BPGA가 ADP에 인산을 주고 생기는 물질은?','3-PGA|3-포스포글리세르산','⑦ 단계: 1,3-BPGA → 3-PGA. ADP → ATP (기질수준 인산화).'],
+['G',1,'3-PGA에서 인산기 위치가 바뀌어 생기는 물질은?','2-PGA|2-포스포글리세르산','⑧ 단계: 3-PGA ⇄ 2-PGA (인산기가 3번 → 2번 탄소로).'],
+['G',1,'2-PGA에서 H₂O가 빠져 생기는 물질은?','PEP|포스포엔올피루브산','⑨ 단계: 2-PGA → PEP + H₂O.'],
+['G',1,'해당과정의 최종 산물은?','피루브산','⑩ 단계: PEP → 피루브산. 포도당 1분자에서 피루브산 2분자가 생겨요.'],
+['G',2,'포도당 1분자가 해당과정 투자기(①~④)에서 소모하는 ATP는 몇 분자?','2','①, ③ 단계에서 1분자씩, 총 2ATP.','num'],
+['G',2,'포도당 1분자가 해당과정 회수기(⑤~⑩)에서 생성하는 ATP는 총 몇 분자?','4','⑦, ⑩ 단계에서 2ATP씩(G3P가 2분자이므로) → 총 4ATP.','num'],
+['G',2,'포도당 1분자가 해당과정을 거칠 때 순생성되는 ATP는 몇 분자?','2','회수 4 − 투자 2 = 순생성 2ATP.','num'],
+['G',2,'포도당 1분자가 해당과정을 거칠 때 생성되는 NADH는 몇 분자?','2','⑥ 단계에서 G3P 2분자가 각각 NAD⁺를 환원 → 2NADH.','num'],
+['G',2,'포도당 1분자가 해당과정을 거치면 피루브산은 몇 분자 생기는가?','2','6탄소 포도당 → 3탄소 피루브산 2분자.','num'],
+['G',3,'피루브산 1분자의 탄소 수는?','3','포도당(6C)이 3C 두 개로 나뉘므로 피루브산은 3C.','num'],
+['G',3,'과당-1,6-이인산 1분자의 탄소 수는?','6','④ 단계에서 쪼개지기 전(포도당 ~ F-1,6-BP)은 모두 6C.','num'],
+['G',3,'해당과정에서 한 방향 화살표(→, 비가역)로 표시되는 단계 번호 3개는?','1;3;10','①(포도당→G-6-P), ③(F-6-P→F-1,6-BP), ⑩(PEP→피루브산)만 한 방향, 나머지는 ⇄.','set'],
+['G',3,'해당과정에서 ATP → ADP 화살표(ATP 소모)가 표시되는 단계 번호 2개는?','1;3','ATP는 투자기의 ①과 ③에서 소모돼요.','set'],
+['G',3,'해당과정에서 ADP → ATP 화살표(ATP 생성)가 표시되는 단계 번호 2개는?','7;10','⑦(1,3-BPGA→3-PGA), ⑩(PEP→피루브산)에서 ATP가 생겨요.','set'],
+['G',4,'해당과정이 일어나는 장소는?','세포질|세포기질|시토졸','해당과정은 미토콘드리아 밖, 세포질에서 일어나요.'],
+['G',4,'해당과정에서 ATP가 만들어지는 인산화 방식은?','기질수준 인산화|기질 수준 인산화','⑦·⑩ 단계에서 인산기가 기질에서 ADP로 직접 옮겨져요.'],
+['G',4,'피루브산이 미토콘드리아에서 전환되어 TCA 회로로 들어가는 2탄소 물질은?','아세틸-CoA|아세틸조효소A|acetyl-CoA','피루브산(3C) → 아세틸-CoA(2C) + CO₂ (+NADH).'],
+['T',1,'아세틸-CoA와 결합하여 시트르산을 만드는 4탄소 물질은?','옥살로아세트산|OAA|옥살아세트산','아세틸-CoA(2C) + 옥살로아세트산(4C) → 시트르산(6C).'],
+['T',1,'TCA 회로에서 처음 만들어지는 6탄소 물질은?','시트르산|구연산','그래서 시트르산 회로라고도 불러요.'],
+['T',1,'시트르산이 시스-아코니트산을 거쳐 바뀐 물질은?','이소시트르산|아이소시트르산','H₂O가 빠졌다가(시스-아코니트산) 다시 붙어 이소시트르산이 돼요.'],
+['T',1,'이소시트르산에서 CO₂와 NADH가 나오며 생기는 5탄소 물질은?',KG,'첫 번째 CO₂ 방출: 6C → 5C.'],
+['T',1,'α-케토글루타르산에서 CO₂와 NADH가 나오며 생기는 4탄소 물질은?','숙시닐-CoA|숙시닐조효소A','두 번째 CO₂ 방출: 5C → 4C.'],
+['T',1,'숙시닐-CoA가 GTP를 만들며 바뀐 물질은?','숙신산|석신산','GDP + Pᵢ → GTP(ATP), 기질수준 인산화.'],
+['T',1,'숙신산에서 FADH₂가 만들어지며 생기는 물질은?','푸마르산','숙신산 → 푸마르산: FAD → FADH₂.'],
+['T',1,'푸마르산에 H₂O가 더해져 생기는 물질은?','말산','푸마르산 + H₂O → 말산.'],
+['T',1,'말산에서 NADH가 만들어지며 재생되는 물질은?','옥살로아세트산|OAA','말산 → 옥살로아세트산(NAD⁺ → NADH). 다시 아세틸-CoA와 결합해 회로가 돌아요.'],
+['T',2,'TCA 회로 1회전당 생성되는 NADH는 몇 분자?','3','이소시트르산→α-KG, α-KG→숙시닐-CoA, 말산→옥살로아세트산에서 1개씩.','num'],
+['T',2,'TCA 회로 1회전당 생성되는 FADH₂는 몇 분자?','1','숙신산 → 푸마르산 한 곳.','num'],
+['T',2,'TCA 회로 1회전당 방출되는 CO₂는 몇 분자?','2','6C→5C, 5C→4C 두 번.','num'],
+['T',2,'TCA 회로 1회전당 생성되는 GTP(ATP)는 몇 분자?','1','숙시닐-CoA → 숙신산 단계.','num'],
+['T',2,'포도당 1분자가 완전 분해될 때 TCA 회로는 몇 회전하는가?','2','포도당 1 → 피루브산 2 → 아세틸-CoA 2 → 2회전.','num'],
+['T',2,'포도당 1분자 기준 TCA 회로에서 생성되는 NADH는 총 몇 분자?','6','3NADH × 2회전 = 6.','num'],
+['T',2,'포도당 1분자 기준 TCA 회로에서 방출되는 CO₂는 총 몇 분자?','4','2CO₂ × 2회전 = 4.','num'],
+['T',3,'α-케토글루타르산의 탄소 수는?','5','시트르산(6C) → 이소시트르산(6C) → α-케토글루타르산(5C).','num'],
+['T',3,'시트르산의 탄소 수는?','6','2C(아세틸기) + 4C(옥살로아세트산) = 6C.','num'],
+['T',3,'숙시닐-CoA의 탄소 수는?','4','5C에서 CO₂가 빠져 4C. 이후 옥살로아세트산까지 모두 4C.','num'],
+['T',3,'TCA 회로에서 CO₂ 방출 화살표가 표시되는 두 반응의 반응물을 쓰시오.','이소시트르산;'+KG,'이소시트르산 → α-KG, α-KG → 숙시닐-CoA에서 CO₂가 1분자씩 빠져요.','set'],
+['T',4,'TCA 회로가 일어나는 장소는?','미토콘드리아 기질|기질|매트릭스','TCA 회로는 미토콘드리아 기질에서 일어나요.'],
+['T',4,'TCA 회로에서 생성된 NADH가 전자를 주는 전자전달 복합체는?','복합체 1|1','NADH → 복합체 Ⅰ, FADH₂ → 복합체 Ⅱ.'],
+['T',4,'TCA 회로에서 생성된 FADH₂가 전자를 주는 전자전달 복합체는?','복합체 2|2','FADH₂는 복합체 Ⅰ을 거치지 않고 Ⅱ를 통해 Q에 전자를 줘요.'],
+['O',1,'전자전달계의 최종 전자 수용체는?','O₂|산소','전자는 복합체 Ⅳ에서 O₂로 전달되고, O₂는 H₂O가 돼요.'],
+['O',1,'최종 전자 수용체가 전자와 H⁺를 받아 생성되는 물질은?','H₂O|물','O₂ + 4e⁻ + 4H⁺ → 2H₂O.'],
+['O',1,'복합체 Ⅰ·Ⅱ에서 전자를 받아 복합체 Ⅲ으로 전달하는 이동성 운반체는?','유비퀴논|Q|CoQ|조효소Q|코엔자임Q','NADH 쪽(Ⅰ)과 FADH₂ 쪽(Ⅱ)의 전자가 모두 Q로 모여요.'],
+['O',1,'복합체 Ⅲ에서 복합체 Ⅳ로 전자를 전달하는 이동성 운반체는?','사이토크롬 c|시토크롬 c|cyt c','사이토크롬 c는 막간 공간 쪽에서 Ⅲ → Ⅳ로 전자를 옮겨요.'],
+['O',1,'복합체 Ⅰ에 전자를 주는 조효소는?','NADH|NADH+H⁺','NADH → NAD⁺가 되면서 복합체 Ⅰ에 전자를 줘요.'],
+['O',1,'복합체 Ⅱ를 통해 Q에 전자를 주는 조효소는?','FADH₂','FADH₂ → FAD. 복합체 Ⅰ을 거치지 않아요.'],
+['O',1,'NADH가 전자를 주고 산화되어 생기는 물질은?','NAD⁺|NAD','NADH → NAD⁺ + H⁺ + 2e⁻.'],
+['O',2,'O₂ + 4e⁻ + 4H⁺ → ( ? )H₂O — 빈칸의 수는?','2','O₂ 1분자가 전자 4개를 받아 물 2분자가 돼요.','num'],
+['O',2,'O₂ 1분자가 물로 환원될 때 받는 전자는 몇 개?','4','O₂ + 4e⁻ + 4H⁺ → 2H₂O.','num'],
+['O',2,'½O₂가 환원될 때 받는 전자는 몇 개?','2','½O₂ + 2e⁻ + 2H⁺ → H₂O.','num'],
+['O',2,'포도당 1분자가 완전 분해될 때 전자전달계로 가는 NADH는 총 몇 분자?','10','해당 2 + 피루브산→아세틸-CoA 2 + TCA 6 = 10.','num'],
+['O',2,'포도당 1분자가 완전 분해될 때 전자전달계로 가는 FADH₂는 총 몇 분자?','2','모두 TCA 회로(숙신산→푸마르산)에서, 1회전당 1분자 × 2.','num'],
+['O',3,'H⁺를 펌핑하는 전자전달 복합체 3개는? (번호로)','1;3;4','복합체 Ⅰ·Ⅲ·Ⅳ가 H⁺를 펌핑해요. Ⅱ는 펌핑하지 않아요.','set'],
+['O',3,'H⁺를 펌핑하지 않는 전자전달 복합체는?','복합체 2|2','그래서 FADH₂는 NADH보다 ATP를 적게 만들어요.'],
+['O',3,'전자전달 복합체가 H⁺를 펌핑하는 방향은? (A → B 형태로)','기질>막간 공간','H⁺는 기질 → 막간 공간으로 퍼내져 막간 공간에 쌓여요.','order'],
+['O',3,'ATP 합성효소를 지날 때 H⁺의 이동 방향은? (A → B 형태로)','막간 공간>기질','농도가 높은 막간 공간 → 기질로 H⁺가 흘러들며 ATP가 생겨요.','order'],
+['O',3,'전자 흐름을 완성하시오: NADH → ( ? ) → Q → 복합체 Ⅲ','복합체 1|1','NADH의 전자는 복합체 Ⅰ로 들어가요.'],
+['O',4,'전자전달계와 ATP 합성효소가 있는 곳은?','미토콘드리아 내막|내막','산화적 인산화는 미토콘드리아 내막에서 일어나요.'],
+['O',4,'미토콘드리아에서 H⁺ 농도가 높은(pH가 낮은) 공간은?','막간 공간','펌핑된 H⁺가 막간 공간에 쌓여요.'],
+['O',4,'산화적 인산화로 ATP가 생성되는 쪽은? (막간 공간 / 기질)','기질|미토콘드리아 기질','ATP 합성효소의 F₁ 부분이 기질 쪽에 있어요.'],
+['O',4,'H⁺ 농도 기울기로 ATP를 합성하는, 산화적 인산화와 광인산화의 공통 원리는?','화학삼투|화학삼투설','막을 사이에 둔 H⁺ 농도 차이로 ATP를 만드는 원리예요.'],
+['L',1,'광계 Ⅱ → ( ? ) → Cyt b₆f — 빈칸의 전자 운반체는?','PQ|플라스토퀴논','광계 Ⅱ의 전자는 PQ(플라스토퀴논)가 받아 Cyt b₆f로 넘겨요.'],
+['L',1,'Cyt b₆f → ( ? ) → 광계 Ⅰ — 빈칸의 전자 운반체는?','PC|플라스토시아닌','PC는 틸라코이드 강 쪽에서 전자를 광계 Ⅰ로 옮겨요.'],
+['L',1,'광계 Ⅰ → ( ? ) → NADP⁺ — 빈칸의 전자 운반체는?','Fd|페레독신','광계 Ⅰ의 들뜬 전자는 Fd(페레독신)를 거쳐 NADP⁺로 가요.'],
+['L',1,'PQ와 PC 사이에서 H⁺를 펌핑하는 복합체는?','Cyt b₆f|Cyt b₆f 복합체|시토크롬 b₆f|사이토크롬 b₆f|b₆f','PQ·Cyt b₆f가 H⁺를 스트로마 → 틸라코이드 강으로 옮겨요.'],
+['L',1,'비순환적 전자 흐름의 최종 전자 수용체는?','NADP⁺|NADP','NADP⁺ + H⁺ + 2e⁻ → NADPH.'],
+['L',1,'물의 광분해로 발생하는 기체는?','O₂|산소','2H₂O → O₂ + 4H⁺ + 4e⁻. O₂는 밖으로 방출돼요.'],
+['L',1,'광계 주변에서 빛에너지를 모아 반응중심으로 전달하는 복합체는?','광수집복합체|LHC|집광복합체|광수확복합체','LHC Ⅱ는 광계 Ⅱ, LHC Ⅰ은 광계 Ⅰ과 연관돼요.'],
+['L',2,'2H₂O → O₂ + ( ? )H⁺ + 4e⁻ — 빈칸의 수는?','4','물 2분자에서 O₂ 1, H⁺ 4, 전자 4개가 나와요.','num'],
+['L',2,'물 2분자가 광분해될 때 발생하는 O₂는 몇 분자?','1','2H₂O → 1O₂.','num'],
+['L',2,'물 1분자가 광분해될 때 나오는 전자는 몇 개?','2','물 2분자 → 전자 4개이므로 1분자 → 2개.','num'],
+['L',2,'순환적 광인산화에서 생성되는 NADPH는 몇 분자?','0','순환적 흐름은 Fd → PQ로 되돌아가 NADP⁺를 환원하지 않아요. ATP만 생겨요.','num'],
+['L',2,'전자 4개가 이동할 때 PQ·Cyt b₆f가 틸라코이드 강으로 펌핑하는 H⁺는 몇 개? (노트 그림 기준)','8','노트 그림: 스트로마의 8H⁺ → 틸라코이드 강.','num'],
+['L',3,'PQ·Cyt b₆f에 의한 H⁺ 이동 방향은? (A → B 형태로)','스트로마>틸라코이드 강|강|루멘','H⁺를 스트로마에서 틸라코이드 강으로 퍼 올려요.','order'],
+['L',3,'엽록체 ATP 합성효소를 지날 때 H⁺의 이동 방향은? (A → B 형태로)','틸라코이드 강|강|루멘>스트로마','H⁺가 틸라코이드 강 → 스트로마로 흐르며 ATP가 생겨요.','order'],
+['L',3,'순환적 전자 흐름에서 Fd의 전자는 어디로 되돌아가는가?','PQ|플라스토퀴논','순환적: 광계 Ⅰ → Fd → PQ → Cyt b₆f → PC → 광계 Ⅰ.'],
+['L',3,'물에서 나온 전자가 먼저 지나는 광계는? (광계 Ⅰ / 광계 Ⅱ)','광계 2|2|PS2','광계 Ⅱ → … → 광계 Ⅰ 순서. 번호와 순서가 반대인 점 주의!'],
+['L',4,'명반응(전자전달·광인산화)이 일어나는 장소는?','틸라코이드 막','광계, 전자 운반체, ATP 합성효소가 모두 틸라코이드 막에 있어요.'],
+['L',4,'H⁺가 쌓여 pH가 4~5로 낮은 엽록체 공간은?','틸라코이드 강|루멘','스트로마는 pH 7~8로 높아요.'],
+['L',4,'NADPH와 ATP가 생성되는 엽록체 쪽 공간은?','스트로마','생성된 ATP·NADPH는 바로 스트로마의 캘빈 회로에 쓰여요.'],
+['L',4,'명반응 산물 중 캘빈 회로로 공급되는 물질 2가지는?','ATP;NADPH','O₂는 방출되고, ATP와 NADPH가 캘빈 회로로 가요.','set'],
+['L',4,'순환적 광인산화에서 작동하는 광계는?','광계 1|1|PS1','순환적 광인산화는 광계 Ⅰ만 작동해요.'],
+['C',1,'캘빈 회로에서 CO₂와 결합하는 5탄소 물질은?','RuBP|리불로오스-1,5-이인산|리불로스이인산','3CO₂ + 3RuBP → 6 3-PGA (① 고정).'],
+['C',1,'CO₂ 고정으로 생기는 3탄소 물질은?','3-PGA|PGA|3-포스포글리세르산','RuBP(5C) + CO₂ → 3-PGA(3C) 2분자.'],
+['C',1,'캘빈 회로에서 3-PGA가 ATP로 인산화되어 생기는 물질은?','BPGA|1,3-BPGA|1,3-이인산글리세르산','② 환원 단계 전반: 3-PGA → BPGA (ATP → ADP).'],
+['C',1,'캘빈 회로에서 BPGA가 NADPH로 환원되어 생기는 물질은?','G3P|PGAL|글리세르알데히드-3-인산','② 환원 단계 후반: BPGA → G3P (NADPH → NADP⁺).'],
+['C',1,'ATP로 인산화되어 RuBP가 되는 5탄소 물질은?','RuP|Ru5P|리불로오스-5-인산','③ 재생 단계: 5 G3P → 3 RuP → 3 RuBP (ATP 3).'],
+['C',1,'캘빈 회로 밖으로 나가 포도당·녹말·설탕 합성에 쓰이는 물질은?','G3P|PGAL','CO₂ 3분자당 G3P 1분자가 회로 밖으로 나가요.'],
+['C',2,'CO₂ 3분자 기준 캘빈 회로에서 소모되는 ATP는 몇 분자?','9','환원 6 + 재생 3 = 9ATP.','num'],
+['C',2,'CO₂ 3분자 기준 캘빈 회로에서 소모되는 NADPH는 몇 분자?','6','환원 단계에서 BPGA 6 → G3P 6에 NADPH 6.','num'],
+['C',2,'CO₂ 3분자 기준 회로 밖으로 나가는 G3P는 몇 분자?','1','G3P 6분자 중 1분자 방출, 5분자는 RuBP 재생.','num'],
+['C',2,'포도당 1분자를 합성할 때 소모되는 ATP는 몇 분자?','18','G3P 2분자 필요 → 9ATP × 2 = 18.','num'],
+['C',2,'포도당 1분자를 합성할 때 소모되는 NADPH는 몇 분자?','12','6NADPH × 2 = 12.','num'],
+['C',2,'포도당 1분자를 합성할 때 고정되는 CO₂는 몇 분자?','6','포도당(6C)의 탄소 6개 = CO₂ 6분자.','num'],
+['C',3,'RuBP 1분자의 탄소 수는?','5','RuBP·RuP는 5C, 3-PGA·BPGA·G3P는 3C.','num'],
+['C',3,'3RuBP + 3CO₂ → 6 3-PGA에서 3-PGA 6분자의 전체 탄소 수는?','18','15C(3RuBP) + 3C(3CO₂) = 18C = 3C × 6.','num'],
+['C',3,'RuBP 재생에 쓰이는 G3P 5분자의 전체 탄소 수는?','15','3C × 5 = 15C = 5C × 3 (RuBP 3분자).','num'],
+['C',3,'ATP와 NADPH가 모두 쓰이지 않는 캘빈 회로 단계는? (고정 / 환원 / 재생)','고정|고정 단계|1','① 고정은 CO₂가 RuBP에 붙기만 해요.'],
+['C',3,'NADPH → NADP⁺ 화살표가 표시되는 캘빈 회로 단계는? (고정 / 환원 / 재생)','환원|환원 단계|2','② 환원 단계(BPGA → G3P)에서만 NADPH를 써요.'],
+['C',3,'ATP → ADP 화살표가 표시되는 캘빈 회로 단계 2가지는? (고정 / 환원 / 재생)','환원;재생','환원(3-PGA→BPGA, 6ATP)과 재생(RuP→RuBP, 3ATP).','set'],
+['C',4,'캘빈 회로가 일어나는 엽록체 속 장소는?','스트로마','스트로마에서 명반응의 ATP·NADPH를 써서 CO₂를 고정해요.'],
+['C',4,'캘빈 회로에서 생긴 ADP·NADP⁺를 다시 ATP·NADPH로 만드는 반응은?','명반응|광반응','명반응과 캘빈 회로는 ATP·NADPH ⇄ ADP·NADP⁺로 연결돼요.'],
+['C',4,'광호흡이 촉진되는 CO₂ 농도 조건은? (높을 때 / 낮을 때)','낮을 때|낮|감소|↓','광호흡은 온도↑, O₂↑, CO₂↓일 때 촉진돼요.','any'],
+['C',4,'사막에서 밤에만 기공을 열어 CO₂를 흡수하는 식물은?','CAM 식물|CAM','낮에 기공을 닫아 수분을 지키고 밤에 CO₂를 흡수해요.']
+];
+
+const Q=D.map((r,i)=>({id:i,p:r[0],q:r[2],a:r[3],x:r[4],k:r[5]||'text'}));
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ROM={i:1,ii:2,iii:3,iv:4};
+const circ=s=>String(s).replace(/[①-⑳]/g,c=>' '+(c.charCodeAt(0)-0x245F)+' ');
+function norm(s){s=circ(s).normalize('NFKC').toLowerCase().replace(/⟶|->|=>|→/g,'>').replace(/α/g,'a').replace(/[\s\-·.,()_'"~:]/g,'');
+ return s.replace(/^(복합체|광계|ps)?(iv|iii|ii|i)$/,(m,p,r)=>(p||'')+ROM[r])}
+const vars=t=>t.split('|').map(norm);
+function toks(s){return circ(s).split(/[,，、\/·;]+|\s+|및|그리고/).map(t=>norm(t.replace(/(와|과|랑|하고)$/,'')).replace(/^(복합체|단계|광계)/,'').replace(/(번|단계)$/,'')).map(t=>t.replace(/^(iv|iii|ii|i)$/,r=>ROM[r])).filter(Boolean)}
+function check(q,inp){const n=norm(inp);if(!n)return false;
+ if(q.k==='num'){if(q.a==='0'&&/없/.test(inp))return true;const m=String(inp).normalize('NFKC').match(/\d+/);return !!m&&m[0]===q.a}
+ if(q.k==='any')return vars(q.a).some(v=>n.includes(v));
+ if(q.k==='order'){const [x,y]=q.a.split('>').map(vars);const ix=Math.min(...x.map(v=>{const i=n.indexOf(v);return i<0?1e9:i}));const iy=Math.max(...y.map(v=>n.lastIndexOf(v)));return ix<1e9&&iy>ix}
+ if(q.k==='set'){const it=q.a.split(';').map(vars),t=toks(inp);return it.every(a=>t.some(x=>a.includes(x)))&&t.every(x=>it.some(a=>a.includes(x)))&&t.length===it.length}
+ return vars(q.a).includes(n)}
+function show(q){if(q.k==='order'){const [x,y]=q.a.split('>');return x.split('|')[0]+' → '+y.split('|')[0]}if(q.k==='set')return q.a.split(';').map(s=>s.split('|')[0]).join(', ');return q.a.split('|')[0]}
+let ST={};try{ST=JSON.parse(localStorage.getItem('bioquiz-v1')||'{}')}catch(e){ST={}}
+const save=()=>{try{localStorage.setItem('bioquiz-v1',JSON.stringify(ST))}catch(e){}};
+const agg=ids=>{let t=0,c=0;ids.forEach(i=>{const s=ST[i];if(s){t+=s[0];c+=s[1]}});return [t,c]};
+const CHK='<svg class="chk" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+let selP=new Set(Object.keys(PN)),selN='20';
+const pool=()=>Q.filter(q=>selP.has(q.p));
+function drawSetup(){
+ $('bank').textContent=`문제 ${Q.length}개 · 직접 입력하고 해설로 확인해요`;
+ $('plist').innerHTML=Object.keys(PN).map(p=>{const ids=Q.filter(q=>q.p===p).map(q=>q.id),[t,c]=agg(ids);
+  return `<button class="cell ${selP.has(p)?'on':''}" data-p="${p}" role="checkbox" aria-checked="${selP.has(p)}" style="--c:var(--${p})"><span class="ico ${p}">${PI[p]}</span><span class="tx">${PN[p]}<small>${ids.length}문제 · ${t?'정답률 '+Math.round(c/t*100)+'%':'아직 기록 없음'}</small></span>${CHK}</button>`}).join('');
+ $('seg').innerHTML=['10','20','30','전체'].map(n=>`<button class="${selN===n?'on':''}" data-n="${n}" role="radio" aria-checked="${selN===n}">${n==='전체'?'전체':n+'개'}</button>`).join('');
+ const [t,c]=agg(Q.map(q=>q.id));$('totp').textContent=t?Math.round(c/t*100)+'%':'—';$('tot').textContent=t?`${t}번 풀어서 ${c}번 정답`:'아직 푼 문제가 없어요';
+ const n=pool().length;$('go').disabled=!n;$('go').textContent=n?`퀴즈 시작 · ${selN==='전체'?n:Math.min(n,+selN)}문제`:'과정을 하나 이상 골라 주세요'}
+$('plist').addEventListener('click',e=>{const b=e.target.closest('[data-p]');if(!b)return;const p=b.dataset.p;selP.has(p)?selP.delete(p):selP.add(p);drawSetup()});
+$('seg').addEventListener('click',e=>{const b=e.target.closest('[data-n]');if(!b)return;selN=b.dataset.n;drawSetup()});
+let list=[],idx=0,log=[],done=false,lastWrong=[];
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+function view(v){['setup','quiz','result'].forEach(s=>$(s).classList.toggle('hide',s!==v));$('back').classList.toggle('hide',v==='setup');$('navr').textContent='';$('navt').textContent=v==='result'?'결과':'퀴즈';window.scrollTo(0,0);onScroll()}
+function start(arr){list=arr;idx=0;log=[];view('quiz');ask()}
+function ask(){const q=list[idx];done=false;
+ $('navr').textContent=`${idx+1} / ${list.length}`;$('navt').textContent=PN[q.p];$('pbar').style.width=(idx/list.length*100)+'%';
+ $('plab').innerHTML=`<i style="--c:var(--${q.p})"></i>${PN[q.p]}`;$('qtext').textContent=q.q;
+ $('ans').value='';$('ans').disabled=false;$('hint').textContent='';$('fb').innerHTML='';$('acts').classList.remove('hide');$('ans').focus({preventScroll:true})}
+function grade(skip){if(done)return;const q=list[idx],inp=$('ans').value.trim();if(!skip&&!inp){$('hint').textContent='답을 입력하거나 “모름”을 눌러 주세요.';return}
+ done=true;const ok=!skip&&check(q,inp),s=ST[q.id]||[0,0];s[0]++;if(ok)s[1]++;ST[q.id]=s;save();
+ log.push({q,inp:skip?'모름':inp,ok,skip});$('ans').disabled=true;$('acts').classList.add('hide');feedback()}
+const ICO={ok:'<svg viewBox="0 0 28 28"><circle cx="14" cy="14" r="14" fill="currentColor"/><path d="M8 14.5l4 4L20.5 10" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+ no:'<svg viewBox="0 0 28 28"><circle cx="14" cy="14" r="14" fill="currentColor"/><path d="M9.5 9.5l9 9M18.5 9.5l-9 9" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/></svg>'};
+function feedback(){const L=log[log.length-1],q=L.q,s=ST[q.id];
+ $('fb').innerHTML=`<div class="fb ${L.ok?'ok':'no'}"><div class="fbh">${L.ok?ICO.ok+'정답':ICO.no+'오답'}</div>
+ <dl class="kv"><dt>정답</dt><dd>${esc(show(q))}</dd>${L.ok?'':`<dt>내 답</dt><dd style="color:var(--red)">${esc(L.inp)}</dd>`}</dl>
+ <p class="ex">${esc(q.x)}</p><p class="st">이 문제 누적 정답률 ${Math.round(s[1]/s[0]*100)}% · ${s[0]}회 풀이</p></div>
+ ${L.ok||L.skip?'':'<button class="link" id="accept">맞게 썼는데 오답 처리됐어요 — 정답으로 인정</button>'}
+ <button class="btn nx" id="next">${idx+1<list.length?'다음 문제':'결과 보기'}</button>`;
+ $('next').focus({preventScroll:true});$('fb').scrollIntoView({block:'nearest',behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth'})}
+function next(){idx++;idx<list.length?ask():result()}
+function result(){view('result');const ok=log.filter(l=>l.ok).length,p=Math.round(ok/log.length*100),wr=log.filter(l=>!l.ok),C=2*Math.PI*88;
+ const col=p>=80?'var(--green)':p>=50?'var(--blue)':'var(--red)';
+ const msg=p>=90?'거의 완벽해요!':p>=70?'잘했어요. 틀린 문제만 다시 볼까요?':p>=50?'절반 넘게 맞혔어요. 해설을 보고 다시 도전!':'암기 노트를 한 번 더 보고 도전해요.';
+ const bars=Object.keys(PN).filter(k=>log.some(l=>l.q.p===k)).map(k=>{const a=log.filter(l=>l.q.p===k),o=a.filter(l=>l.ok).length,r=Math.round(o/a.length*100);
+  return `<div class="cell" style="cursor:default;--c:var(--${k})"><span class="ico ${k}">${PI[k]}</span><div class="bar"><span>${PN[k]} <span style="color:var(--sec);font-size:14px">${o}/${a.length}</span></span><b>${r}%</b><span class="tr"><i style="width:${r}%"></i></span></div></div>`}).join('');
+ $('result').innerHTML=`<h1>결과</h1><div class="res2"><div class="rleft">
+ <div class="group" style="padding:20px 16px 8px"><div class="ring"><svg viewBox="0 0 200 200" role="img" aria-label="정답률 ${p}%"><circle cx="100" cy="100" r="88" fill="none" stroke="var(--fill)" stroke-width="16"/><circle cx="100" cy="100" r="88" fill="none" stroke="${col}" stroke-width="16" stroke-linecap="round" stroke-dasharray="${C*p/100} ${C}" opacity="${p?1:0}" transform="rotate(-90 100 100)"/><text x="100" y="104" text-anchor="middle" class="pc">${p}%</text><text x="100" y="130" text-anchor="middle" class="sb">${log.length}문제 중 ${ok}개 정답</text></svg></div><p class="rmsg">${msg}</p></div>
+ <p class="gh">과정별 정답률</p><div class="group">${bars}</div>
+ <div class="rbtn">${wr.length?'<button class="btn" id="retry">틀린 문제만 다시 풀기</button>':''}<button class="btn tint" id="again">새 문제로 다시</button><button class="btn gray" id="home">처음으로</button></div></div>
+ <div><p class="gh">${wr.length?`틀린 문제 ${wr.length}개`:'틀린 문제'}</p><div class="group">${wr.length?wr.map(l=>`<div class="wr"><div class="wq"><span>${PN[l.q.p]}</span>${esc(l.q.q)}</div><div class="wa">내 답: ${esc(l.inp)}</div><div class="wc">정답: ${esc(show(l.q))}</div><div class="we">${esc(l.q.x)}</div></div>`).join(''):'<div class="wr">모두 맞혔어요. 대단해요!</div>'}</div></div></div>`;
+ lastWrong=wr.map(l=>l.q)}
+function go(){const pl=shuffle(pool());start(selN==='전체'?pl:pl.slice(0,+selN))}
+$('go').addEventListener('click',go);
+$('back').addEventListener('click',()=>{view('setup');drawSetup()});
+$('reset').addEventListener('click',()=>{const b=$('reset');if(b.dataset.c){ST={};save();b.textContent='기록 지우기';delete b.dataset.c;drawSetup()}else{b.dataset.c=1;b.textContent='한 번 더 누르면 모든 기록이 지워져요'}});
+$('form').addEventListener('submit',e=>{e.preventDefault();grade(false)});
+$('submit').addEventListener('click',()=>grade(false));
+$('skip').addEventListener('click',()=>grade(true));
+$('hintBtn').addEventListener('click',()=>{const q=list[idx],a=show(q);
+ $('hint').textContent=q.k==='num'?'숫자로 답해요 (예: 2)':q.k==='set'?`답이 ${q.a.split(';').length}개예요 · 첫 글자 “${a[0]}”`:q.k==='order'?'“A → B” 형태로 써요':`“${a[0]}”(으)로 시작 · ${a.replace(/\s/g,'').length}글자`});
+$('fb').addEventListener('click',e=>{const id=e.target.closest('button')?.id;if(id==='next')next();
+ if(id==='accept'){const L=log[log.length-1];L.ok=true;ST[L.q.id][1]++;save();feedback()}});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&done&&!$('quiz').classList.contains('hide')&&e.target.tagName!=='BUTTON'){e.preventDefault();next()}});
+$('result').addEventListener('click',e=>{const id=e.target.closest('button')?.id;if(id==='retry')start(shuffle(lastWrong));if(id==='again')go();if(id==='home'){view('setup');drawSetup()}});
+function onScroll(){$('nav').classList.toggle('line',scrollY>30||!$('setup').classList.contains('hide')===false)}
+addEventListener('scroll',onScroll,{passive:true});
+drawSetup();onScroll();
+}
+</script>
+</body>
+</html>
